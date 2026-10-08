@@ -1,0 +1,7 @@
+{
+  "name": "opencode-karakuri-plugin",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Auto-runs karakuri digest + audit after file mutations in OpenCode."
+}

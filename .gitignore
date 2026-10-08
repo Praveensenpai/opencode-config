@@ -1,0 +1,18 @@
+# Secrets & machine-local state
+.env
+auth.json
+service.json
+
+# Runtime databases
+*.db
+*.db-shm
+*.db-wal
+
+# Dependencies
+node_modules/
+
+# Backups
+*.bak
+
+# OS noise
+.DS_Store

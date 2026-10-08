@@ -1,0 +1,72 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "theme": "system",
+  "autoupdate": false,
+  "disabled_providers": ["opencode"],
+  "model": "mochi/v4.1flash",
+  "plugin": ["./plugins/karakuri/plugin.js"],
+  "compaction": {
+    "auto": true,
+    "reserved": 64000
+  },
+  "provider": {
+    "mochi": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Mochi (deeperseeker-rs)",
+      "options": {
+        "baseURL": "__MOCHI_BASE_URL__",
+        "apiKey": "__MOCHI_API_KEY__"
+      },
+      "models": {
+        "v4.1flash": {
+          "name": "DeepSeek V4.1 Flash",
+          "attachment": true,
+          "limit": { "context": 128000, "output": 8192 },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          }
+        },
+        "v4.1flash-think": {
+          "name": "DeepSeek V4.1 Flash (Deep Think)",
+          "attachment": true,
+          "reasoning": true,
+          "limit": { "context": 128000, "output": 8192 },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          }
+        },
+        "v4.1flash-search": {
+          "name": "DeepSeek V4.1 Flash (Web Search)",
+          "attachment": true,
+          "limit": { "context": 128000, "output": 8192 },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          }
+        },
+        "v4.1flash-think-search": {
+          "name": "DeepSeek V4.1 Flash (Think + Search)",
+          "attachment": true,
+          "reasoning": true,
+          "limit": { "context": 128000, "output": 8192 },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          }
+        },
+        "anthropic/claude-v4.1flash": {
+          "name": "Claude V4.1 Flash",
+          "attachment": true,
+          "reasoning": true,
+          "limit": { "context": 128000, "output": 8192 },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          }
+        }
+      }
+    }
+  }
+}
