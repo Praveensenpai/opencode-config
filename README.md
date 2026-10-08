@@ -5,6 +5,7 @@
 **A single Rust binary that rebuilds my entire OpenCode setup on any machine — provider, models, TUI ergonomics, and automatic karakuri enforcement.**
 
 [![Public](https://img.shields.io/badge/repo-public-3FB950?style=flat-square&logo=github)](https://github.com/Praveensenpai/opencode-config)
+[![Release](https://img.shields.io/github/v/release/Praveensenpai/opencode-config?style=flat-square&color=7C3AED)](https://github.com/Praveensenpai/opencode-config/releases)
 [![Rust](https://img.shields.io/badge/rust-1.97-000000?style=flat-square&logo=rust&logoColor=white)](#-why-rust)
 [![Platform](https://img.shields.io/badge/platform-linux%20x86__64-1793D1?style=flat-square&logo=linux&logoColor=white)](#)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](#-license)
@@ -41,33 +42,37 @@ curl -fsSL https://raw.githubusercontent.com/Praveensenpai/opencode-config/main/
 
 ```text
         ┌──────────────────────────────────────────────┐
-        │        GitHub Release  (Linux x86_64)          │
-        │   opencode-config-x86_64-unknown-linux-gnu     │
-        └───────────────────────┬─────────���────────────┘
+        │ GitHub Release  ·  Linux x86_64              │
+        │ opencode-config-x86_64-unknown-linux-gnu     │
+        └───────────────────────┬──────────────────────┘
                                 │  curl | bash
                                 ▼
-                 ┌────────────────────────────┐
-                 │   install.sh  (~30 lines)  │
-                 │  download → extract → exec │
-                 └──────────────┬─────────────┘
+        ┌──────────────────────────────────────────────┐
+        │ install.sh  (~30 lines)                      │
+        │ download → extract → exec the binary         │
+        └──────────────────────────────────────────────┘
                                 │
                                 ▼
         ┌──────────────────────────────────────────────┐
-        │  opencode-config  (single Rust binary, 355K)  │
-        │  ┌────────────────────────────────────────┐  │
-        │  │ embedded assets  (include_str!)        │  │
-        │  │  • opencode.json template              │  │
-        │  │  • cli.json · tui.json · package.json  │  │
-        │  │  • karakuri plugin.js                  │  │
-        │  │  • opencode2 wrapper                   │  │
-        │  └────────────────────────────────────────┘  │
-        └──────────────┬───────────────────────────────┘
-                       │ render secrets · write files
-        ┌──────────────┼───────────────┬───────────────┐
-        ▼              ▼               ▼               ▼
-  ~/.config/      ~/.config/      ~/.opencode/    karakuri
-   opencode/       opencode/         bin/         rules + skills
- opencode.json   plugins/karakuri  opencode2      bootstrap+sync
+        │ opencode-config  ·  single Rust binary, 355K │
+        │   ┌──────────────────────────────────────┐   │
+        │   │ embedded assets  (include_str!)      │   │
+        │   │ • opencode.json template             │   │
+        │   │ • cli.json · tui.json · package.json │   │
+        │   │ • karakuri/plugin.js                 │   │
+        │   │ • bin/opencode2 wrapper              │   │
+        │   └──────────────────────────────────────┘   │
+        └───────────────────────┬──────────────────────┘
+                                │  render secrets · write files
+                                ▼
+        ┌──────────────────────────────────────────────┐
+        │ ~/.config/opencode/opencode.json       (600) │
+        │ ~/.config/opencode/cli.json · tui.json       │
+        │ ~/.config/opencode/package.json              │
+        │ ~/.config/opencode/plugins/karakuri/         │
+        │ ~/.opencode/bin/opencode2              (755) │
+        │ karakuri → rules + skills bootstrap + sync   │
+        └──────────────────────────────────────────────┘
 ```
 
 ---
