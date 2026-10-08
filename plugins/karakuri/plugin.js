@@ -1,9 +1,10 @@
-// opencode-karakuri — auto-run karakuri digest + audit after file mutations.
+// opencode-karakuri — auto-run karakuri ensure + digest + audit after file mutations.
 //
 // A native OpenCode plugin. It hooks `tool.execute.after`, and when a
 // file-mutating tool ran, schedules a debounced background pass of:
-//   1. karakuri digest .   (refresh CODEBASE.md)
-//   2. karakuri audit .    (clean-code limits + clippy)
+//   1. karakuri ensure .   (once per session: install stack-matched skills)
+//   2. karakuri digest .   (refresh CODEBASE.md)
+//   3. karakuri audit .    (clean-code limits + clippy)
 //
 // Output is appended to a log file; the session is never blocked and the
 // plugin never raises. See docs/karakuri-auto.md for the full rationale.
@@ -64,7 +65,8 @@ function runCommand(dir, subcommand) {
   });
 }
 
-async function runPass(dir) {
+async function runPass(dir, runEnsure) {
+  if (runEnsure) await runCommand(dir, "ensure");
   await runCommand(dir, "digest");
   await runCommand(dir, "audit");
 }
@@ -73,6 +75,7 @@ function createScheduler(dir) {
   let timer = null;
   let running = false;
   let pending = false;
+  let ensured = false;
 
   const run = async () => {
     if (running) {
@@ -80,8 +83,10 @@ function createScheduler(dir) {
       return;
     }
     running = true;
+    const runEnsure = !ensured;
+    ensured = true;
     try {
-      await runPass(dir);
+      await runPass(dir, runEnsure);
     } finally {
       running = false;
       if (pending) {
