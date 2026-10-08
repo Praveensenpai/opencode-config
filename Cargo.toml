@@ -1,0 +1,18 @@
+[package]
+name = "opencode-config"
+version = "0.1.0"
+edition = "2021"
+description = "Single-binary installer for a customized OpenCode setup"
+license = "MIT"
+repository = "https://github.com/Praveensenpai/opencode-config"
+publish = false
+
+[[bin]]
+name = "opencode-config"
+path = "src/main.rs"
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1
+opt-level = "z"

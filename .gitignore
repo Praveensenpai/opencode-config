@@ -10,6 +10,7 @@ service.json
 
 # Dependencies
 node_modules/
+/target/
 
 # Backups
 *.bak
