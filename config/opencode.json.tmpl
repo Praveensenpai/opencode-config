@@ -5,6 +5,12 @@
   "disabled_providers": ["opencode"],
   "model": "mochi/v4.1flash",
   "plugin": ["./plugins/karakuri/plugin.js"],
+  "plugins": [
+    {
+      "package": "./interval-ping",
+      "options": { "message": "⏰ ping", "intervalMinutes": 5 }
+    }
+  ],
   "compaction": {
     "auto": true,
     "reserved": 64000

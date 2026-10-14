@@ -60,6 +60,7 @@ curl -fsSL https://raw.githubusercontent.com/Praveensenpai/opencode-config/main/
         │   │ • opencode.json template             │   │
         │   │ • cli.json · tui.json · package.json │   │
         │   │ • karakuri/plugin.js                 │   │
+        │   │ • interval-ping/ (index·rpc·tui)     │   │
         │   │ • bin/opencode2 wrapper              │   │
         │   └──────────────────────────────────────┘   │
         └───────────────────────┬──────────────────────┘
@@ -70,6 +71,7 @@ curl -fsSL https://raw.githubusercontent.com/Praveensenpai/opencode-config/main/
         │ ~/.config/opencode/cli.json · tui.json       │
         │ ~/.config/opencode/package.json              │
         │ ~/.config/opencode/plugins/karakuri/         │
+        │ ~/.config/opencode/interval-ping/            │
         │ ~/.opencode/bin/opencode2              (755) │
         │ karakuri → rules + skills bootstrap + sync   │
         └──────────────────────────────────────────────┘
@@ -98,6 +100,7 @@ cargo test --all-targets
 - 🧮 **Tuned compaction** — reserves 64k of a 128k window so deep-think traces never truncate mid-task. [docs](docs/compaction.md)
 - 🖥️ **CLI & TUI ergonomics** — auto-accept permissions, rendered markdown, hidden thinking, word-wrapped diffs, global tabs. [docs](docs/cli-tui-settings.md)
 - ⚙️ **Automatic karakuri** — a native plugin runs `karakuri digest` + `audit` after every file mutation, debounced and non-blocking. [docs](docs/karakuri-auto.md)
+- ⏰ **Interval ping** — a `/ping` command posts a heartbeat message into the session on a timer, with a live footer countdown. [docs](docs/interval-ping.md)
 - 📚 **Rules & skills** — bootstrapped from the separate `karakuri` repo and synced across agent runtimes, so there is one source and no drift.
 - 🔐 **Secret-free by default** — templated provider values, env-driven render, `0600` on the rendered config.
 - 🔁 **Two-way capture** — `update.sh` snapshots live local edits back into the repo.
@@ -116,6 +119,7 @@ cargo test --all-targets
 | `config/cli.json`, `config/tui.json`, `config/package.json` | Copied verbatim (embedded). |
 | `bin/opencode2` | Launcher wrapper (embedded). |
 | `plugins/karakuri/` | Auto-digest/audit OpenCode plugin (embedded). |
+| `plugins/interval-ping/` | `/ping` heartbeat plugin with TUI countdown (embedded). |
 | `docs/` | Rationale for each customization. |
 | `.github/workflows/release.yml` | Builds + publishes the Linux x86_64 tarball on `v*` tags. |
 

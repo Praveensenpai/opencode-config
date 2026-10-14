@@ -16,6 +16,7 @@ pub struct Secrets {
 pub enum Destination {
     Config,
     Plugin,
+    IntervalPing,
     Bin,
 }
 

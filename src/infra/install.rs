@@ -42,6 +42,7 @@ fn destination_path(paths: &Paths, destination: Destination) -> PathBuf {
     match destination {
         Destination::Config => paths.config_dir.clone(),
         Destination::Plugin => paths.config_dir.join("plugins").join("karakuri"),
+        Destination::IntervalPing => paths.config_dir.join("interval-ping"),
         Destination::Bin => paths.bin_dir.clone(),
     }
 }

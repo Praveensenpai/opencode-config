@@ -7,6 +7,10 @@ const TUI_JSON: &str = include_str!("../../config/tui.json");
 const PACKAGE_JSON: &str = include_str!("../../config/package.json");
 const PLUGIN_JS: &str = include_str!("../../plugins/karakuri/plugin.js");
 const PLUGIN_PACKAGE_JSON: &str = include_str!("../../plugins/karakuri/package.json");
+const INTERVAL_PING_INDEX: &str = include_str!("../../plugins/interval-ping/index.js");
+const INTERVAL_PING_RPC: &str = include_str!("../../plugins/interval-ping/rpc.js");
+const INTERVAL_PING_TUI: &str = include_str!("../../plugins/interval-ping/tui.tsx");
+const INTERVAL_PING_PACKAGE_JSON: &str = include_str!("../../plugins/interval-ping/package.json");
 const WRAPPER: &str = include_str!("../../bin/opencode2");
 
 pub const ASSETS: &[Asset] = &[
@@ -39,6 +43,30 @@ pub const ASSETS: &[Asset] = &[
         contents: PLUGIN_PACKAGE_JSON,
         mode: 0o644,
         destination: Destination::Plugin,
+    },
+    Asset {
+        name: "index.js",
+        contents: INTERVAL_PING_INDEX,
+        mode: 0o644,
+        destination: Destination::IntervalPing,
+    },
+    Asset {
+        name: "rpc.js",
+        contents: INTERVAL_PING_RPC,
+        mode: 0o644,
+        destination: Destination::IntervalPing,
+    },
+    Asset {
+        name: "tui.tsx",
+        contents: INTERVAL_PING_TUI,
+        mode: 0o644,
+        destination: Destination::IntervalPing,
+    },
+    Asset {
+        name: "package.json",
+        contents: INTERVAL_PING_PACKAGE_JSON,
+        mode: 0o644,
+        destination: Destination::IntervalPing,
     },
     Asset {
         name: "opencode2",

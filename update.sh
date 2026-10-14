@@ -51,7 +51,24 @@ capture_static() {
     fi
 }
 
+capture_interval_ping() {
+    local src="${CONFIG_DIR}/interval-ping"
+    if [[ ! -d "${src}" ]]; then
+        log_info "No live interval-ping plugin; skipping"
+        return
+    fi
+    mkdir -p "${SCRIPT_DIR}/plugins/interval-ping"
+    local f
+    for f in index.js rpc.js tui.tsx package.json; do
+        if [[ -f "${src}/${f}" ]]; then
+            install -m 644 "${src}/${f}" "${SCRIPT_DIR}/plugins/interval-ping/${f}"
+            log_ok "Captured interval-ping/${f}"
+        fi
+    done
+}
+
 load_env
 capture_static
+capture_interval_ping
 capture_config
 log_ok "Review changes: git -C \"${SCRIPT_DIR}\" diff"
