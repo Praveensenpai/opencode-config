@@ -67,8 +67,25 @@ capture_interval_ping() {
     done
 }
 
+capture_background_tasks() {
+    local src="${CONFIG_DIR}/background-tasks"
+    if [[ ! -d "${src}" ]]; then
+        log_info "No live background-tasks plugin; skipping"
+        return
+    fi
+    mkdir -p "${SCRIPT_DIR}/plugins/background-tasks"
+    local f
+    for f in index.js tui.tsx package.json; do
+        if [[ -f "${src}/${f}" ]]; then
+            install -m 644 "${src}/${f}" "${SCRIPT_DIR}/plugins/background-tasks/${f}"
+            log_ok "Captured background-tasks/${f}"
+        fi
+    done
+}
+
 load_env
 capture_static
 capture_interval_ping
+capture_background_tasks
 capture_config
 log_ok "Review changes: git -C \"${SCRIPT_DIR}\" diff"

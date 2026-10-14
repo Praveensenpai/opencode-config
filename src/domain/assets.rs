@@ -11,6 +11,10 @@ const INTERVAL_PING_INDEX: &str = include_str!("../../plugins/interval-ping/inde
 const INTERVAL_PING_RPC: &str = include_str!("../../plugins/interval-ping/rpc.js");
 const INTERVAL_PING_TUI: &str = include_str!("../../plugins/interval-ping/tui.tsx");
 const INTERVAL_PING_PACKAGE_JSON: &str = include_str!("../../plugins/interval-ping/package.json");
+const BACKGROUND_TASKS_INDEX: &str = include_str!("../../plugins/background-tasks/index.js");
+const BACKGROUND_TASKS_TUI: &str = include_str!("../../plugins/background-tasks/tui.tsx");
+const BACKGROUND_TASKS_PACKAGE_JSON: &str =
+    include_str!("../../plugins/background-tasks/package.json");
 const WRAPPER: &str = include_str!("../../bin/opencode2");
 
 pub const ASSETS: &[Asset] = &[
@@ -67,6 +71,24 @@ pub const ASSETS: &[Asset] = &[
         contents: INTERVAL_PING_PACKAGE_JSON,
         mode: 0o644,
         destination: Destination::IntervalPing,
+    },
+    Asset {
+        name: "index.js",
+        contents: BACKGROUND_TASKS_INDEX,
+        mode: 0o644,
+        destination: Destination::BackgroundTasks,
+    },
+    Asset {
+        name: "tui.tsx",
+        contents: BACKGROUND_TASKS_TUI,
+        mode: 0o644,
+        destination: Destination::BackgroundTasks,
+    },
+    Asset {
+        name: "package.json",
+        contents: BACKGROUND_TASKS_PACKAGE_JSON,
+        mode: 0o644,
+        destination: Destination::BackgroundTasks,
     },
     Asset {
         name: "opencode2",

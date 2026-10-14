@@ -17,6 +17,7 @@ pub enum Destination {
     Config,
     Plugin,
     IntervalPing,
+    BackgroundTasks,
     Bin,
 }
 
