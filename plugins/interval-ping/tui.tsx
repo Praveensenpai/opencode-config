@@ -51,11 +51,24 @@ function useSchedule(rpc, sessionID) {
     onCleanup(unsubscribe);
   });
 
-  // Tick locally so the countdown updates every second.
+  // Tick locally so the countdown updates every second. While inactive we
+  // also re-poll the server every 5s: the `changed` event is best-effort, and
+  // if it is missed (or a timer starts after this component mounted) the view
+  // would otherwise sit on a stale `idle` forever. Polling only happens when
+  // inactive, so an active timer costs no extra requests.
+  let sincePoll = 0;
   const ticker = setInterval(() => {
     setNow(Date.now());
     if (active() && nextAt() - Date.now() <= 0) {
       void refresh(sessionID());
+      return;
+    }
+    if (!active()) {
+      sincePoll += 1;
+      if (sincePoll >= 5) {
+        sincePoll = 0;
+        void refresh(sessionID());
+      }
     }
   }, 1000);
   onCleanup(() => clearInterval(ticker));
