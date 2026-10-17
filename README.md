@@ -102,7 +102,7 @@ cargo test --all-targets
 - 🧮 **Tuned compaction** — reserves 64k of a 128k window so deep-think traces never truncate mid-task. [docs](docs/compaction.md)
 - 🖥️ **CLI & TUI ergonomics** — auto-accept permissions, rendered markdown, hidden thinking, word-wrapped diffs, global tabs. [docs](docs/cli-tui-settings.md)
 - ⚙️ **Automatic karakuri** — a native plugin runs `karakuri digest` + `audit` after every file mutation, debounced and non-blocking. [docs](docs/karakuri-auto.md)
-- ⏰ **Interval ping** — a `/ping` command posts a heartbeat message into the session on a timer, with a live footer countdown and a right-sidebar status block. [docs](docs/interval-ping.md)
+- ◷ **Interval ping** — a `/ping` command posts a heartbeat message into the session on a timer, with a live footer countdown and a right-sidebar status block. [docs](docs/interval-ping.md)
 - 🧵 **Background tasks panel** — a right-sidebar panel listing every running shell, detached subagent, and PTY process, newest first, with live elapsed time and click-to-enlarge. [docs](docs/background-tasks.md)
 - 📚 **Rules & skills** — bootstrapped from the separate `karakuri` repo and synced across agent runtimes, so there is one source and no drift.
 - 🔐 **Secret-free by default** — templated provider values, env-driven render, `0600` on the rendered config.

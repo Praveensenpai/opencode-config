@@ -70,7 +70,7 @@ function Countdown(props) {
 
   const label = () => {
     const remaining = schedule.nextAt() - schedule.now();
-    return "\u23f0 " + formatRemaining(remaining);
+    return "\u25f7 " + formatRemaining(remaining);
   };
 
   return (

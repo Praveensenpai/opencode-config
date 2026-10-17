@@ -1,4 +1,4 @@
-# ⏰ Interval Ping (`interval-ping.md`)
+# ◷ Interval Ping (`interval-ping.md`)
 
 ## Why it's here
 
@@ -17,7 +17,7 @@ without triggering a new agent turn.
 - **`rpc.js`** — the shared RPC definition (`IntervalPing`) that exposes the
   current schedule for a session.
 - **`tui.tsx`** — the TUI plugin. It reads the schedule over RPC and renders a
-  live `⏰ M:SS` countdown in the prompt footer, plus a `Ping` status block in
+  live `◷ M:SS` countdown in the prompt footer, plus a `Ping` status block in
   the right sidebar with the next ping and the configured interval.
 
 ## How to use
@@ -49,7 +49,7 @@ The plugin reads its options from the `plugins` array in `opencode.json`:
 "plugins": [
   {
     "package": "./interval-ping",
-    "options": { "message": "⏰ ping", "intervalMinutes": 5 }
+    "options": { "message": "◷ ping", "intervalMinutes": 5 }
   }
 ]
 ```
