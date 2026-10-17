@@ -75,8 +75,27 @@ function Countdown(props) {
 
   return (
     <Show when={schedule.active()}>
-      <text fg={context.theme.text.muted}>{label()}</text>
+      <text fg={context.theme.text.muted} attributes={1}>
+        {label()}
+      </text>
     </Show>
+  );
+}
+
+// Terminals are a fixed cell grid, so there is no font-size prop to double.
+// A glyph can only read as "larger" by occupying more cells: the sidebar mark
+// is a 3x3 box-drawn clock, while the footer keeps the single inline glyph.
+function ClockMark(props) {
+  const context = props.context;
+  const fg = () =>
+    props.active ? context.theme.text.base : context.theme.text.muted;
+
+  return (
+    <box flexDirection="column" marginRight={1}>
+      <text fg={fg()}>{"\u256d\u2500\u256e"}</text>
+      <text fg={fg()}>{"\u2502\u25f7\u2502"}</text>
+      <text fg={fg()}>{"\u2570\u2500\u256f"}</text>
+    </box>
   );
 }
 
@@ -96,21 +115,26 @@ function PingStatus(props) {
 
   return (
     <box flexDirection="column" paddingLeft={1} paddingRight={1} marginTop={1}>
-      <box flexDirection="row" justifyContent="space-between">
-        <text fg={context.theme.text.base} attributes={1}>
-          <strong>Ping</strong>
-        </text>
-        <text
-          fg={
-            schedule.active()
-              ? context.theme.text.base
-              : context.theme.text.muted
-          }
-        >
-          {value()}
-        </text>
+      <box flexDirection="row">
+        <ClockMark context={context} active={schedule.active()} />
+        <box flexDirection="column" flexGrow={1}>
+          <box flexDirection="row" justifyContent="space-between">
+            <text fg={context.theme.text.base} attributes={1}>
+              <strong>Ping</strong>
+            </text>
+            <text
+              fg={
+                schedule.active()
+                  ? context.theme.text.base
+                  : context.theme.text.muted
+              }
+            >
+              {value()}
+            </text>
+          </box>
+          <text fg={context.theme.text.muted}>{detail()}</text>
+        </box>
       </box>
-      <text fg={context.theme.text.muted}>{detail()}</text>
     </box>
   );
 }

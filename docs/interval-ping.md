@@ -37,9 +37,11 @@ closure, and each reload re-arms them from the stored `nextAt`. Without this, a
 single file edit disposed the instance and silently killed every running
 `/ping`, which made an active timer look idle in the sidebar.
 
-The sidebar block is always visible: `Ping` with `next M:SS` and
-`every N min · /ping stop` while running, or `idle` with a `/ping 5 to start`
-hint when stopped.
+The sidebar block is always visible: a 3x3 box-drawn clock mark beside
+`Ping` with `next M:SS` and `every N min · /ping stop` while running, or
+`idle` with a `/ping 5 to start` hint when stopped. Terminals are a fixed
+cell grid with no font-size property, so the mark reads as larger simply by
+occupying three rows; the footer keeps the single inline `◷` glyph, bolded.
 
 ## Configuration
 
