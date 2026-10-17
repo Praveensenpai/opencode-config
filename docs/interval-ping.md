@@ -17,7 +17,8 @@ without triggering a new agent turn.
 - **`rpc.js`** — the shared RPC definition (`IntervalPing`) that exposes the
   current schedule for a session.
 - **`tui.tsx`** — the TUI plugin. It reads the schedule over RPC and renders a
-  live `⏰ M:SS` countdown in the prompt footer.
+  live `⏰ M:SS` countdown in the prompt footer, plus a `Ping` status block in
+  the right sidebar with the next ping and the configured interval.
 
 ## How to use
 
@@ -29,6 +30,10 @@ without triggering a new agent turn.
 
 Timers are per-session, so two sessions can run different intervals at once.
 The footer countdown only shows while a timer is active.
+
+The sidebar block is always visible: `Ping` with `next M:SS` and
+`every N min · /ping stop` while running, or `idle` with a `/ping 5 to start`
+hint when stopped.
 
 ## Configuration
 

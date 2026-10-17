@@ -1,7 +1,8 @@
-// interval-ping TUI: live "next ping in X" countdown in the prompt footer.
+// interval-ping TUI: live "next ping in X" countdown in the prompt footer,
+// plus a compact status block in the right sidebar.
 //
 // This entrypoint only reads the schedule over RPC (rpc.js) and renders it.
-// It does not own the timer or the /ping command — those live in index.js.
+// It does not own the timer or the /ping command - those live in index.js.
 
 import { Plugin } from "@opencode/plugin/tui";
 import { Show, createEffect, createSignal, onCleanup } from "solid-js";
@@ -15,38 +16,36 @@ function formatRemaining(ms) {
   return minutes + ":" + padded;
 }
 
-function Countdown(props) {
-  const context = props.context;
-  const rpc = context.client.rpc(IntervalPing);
-
+function useSchedule(rpc, sessionID) {
   const [active, setActive] = createSignal(false);
   const [nextAt, setNextAt] = createSignal(0);
+  const [minutes, setMinutes] = createSignal(0);
   const [now, setNow] = createSignal(Date.now());
 
-  const refresh = async (sessionID) => {
-    if (!sessionID) {
+  const refresh = async (id) => {
+    if (!id) {
       setActive(false);
       return;
     }
     try {
-      const result = await rpc.status({ sessionID: sessionID });
+      const result = await rpc.status({ sessionID: id });
       setActive(result.active);
       setNextAt(result.nextAt);
+      setMinutes(result.minutes);
     } catch {
       setActive(false);
     }
   };
-
   // Refresh whenever the displayed session changes.
   createEffect(() => {
-    const sessionID = props.sessionID;
-    void refresh(sessionID);
-    if (!sessionID) {
+    const id = sessionID();
+    void refresh(id);
+    if (!id) {
       return;
     }
     const unsubscribe = rpc.events.on("changed", (event) => {
-      if (!event || !event.data || event.data.sessionID === sessionID) {
-        void refresh(sessionID);
+      if (!event || !event.data || event.data.sessionID === id) {
+        void refresh(id);
       }
     });
     onCleanup(unsubscribe);
@@ -55,33 +54,85 @@ function Countdown(props) {
   // Tick locally so the countdown updates every second.
   const ticker = setInterval(() => {
     setNow(Date.now());
-    const remaining = nextAt() - Date.now();
-    if (active() && remaining <= 0) {
-      void refresh(props.sessionID);
+    if (active() && nextAt() - Date.now() <= 0) {
+      void refresh(sessionID());
     }
   }, 1000);
   onCleanup(() => clearInterval(ticker));
 
+  return { active, nextAt, minutes, now };
+}
+
+function Countdown(props) {
+  const context = props.context;
+  const rpc = context.client.rpc(IntervalPing);
+  const schedule = useSchedule(rpc, () => props.sessionID);
+
   const label = () => {
-    const remaining = nextAt() - now();
-    return "⏰ " + formatRemaining(remaining);
+    const remaining = schedule.nextAt() - schedule.now();
+    return "\u23f0 " + formatRemaining(remaining);
   };
 
   return (
-    <Show when={active()}>
+    <Show when={schedule.active()}>
       <text fg={context.theme.text.muted}>{label()}</text>
     </Show>
+  );
+}
+
+function PingStatus(props) {
+  const context = props.context;
+  const rpc = context.client.rpc(IntervalPing);
+  const schedule = useSchedule(rpc, () => props.sessionID);
+
+  const value = () =>
+    schedule.active()
+      ? "next " + formatRemaining(schedule.nextAt() - schedule.now())
+      : "idle";
+  const detail = () =>
+    schedule.active()
+      ? "every " + schedule.minutes() + " min \u00b7 /ping stop"
+      : "/ping 5 to start";
+
+  return (
+    <box flexDirection="column" paddingLeft={1} paddingRight={1} marginTop={1}>
+      <box flexDirection="row" justifyContent="space-between">
+        <text fg={context.theme.text.base} attributes={1}>
+          <strong>Ping</strong>
+        </text>
+        <text
+          fg={
+            schedule.active()
+              ? context.theme.text.base
+              : context.theme.text.muted
+          }
+        >
+          {value()}
+        </text>
+      </box>
+      <text fg={context.theme.text.muted}>{detail()}</text>
+    </box>
   );
 }
 
 export default Plugin.define({
   id: "interval-ping.tui",
   setup(context) {
-    return context.ui.slot({
+    const stopFooter = context.ui.slot({
       append: "prompt.footer.status",
       render: (input) => (
         <Countdown context={context} sessionID={input.sessionID} />
       ),
     });
+    const stopSidebar = context.ui.slot({
+      append: "sidebar.content",
+      render: (input) => (
+        <PingStatus context={context} sessionID={input.sessionID} />
+      ),
+    });
+    return function () {
+      stopSidebar();
+      stopFooter();
+    };
   },
 });
