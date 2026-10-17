@@ -15,84 +15,124 @@
 // message, so it shows up in the transcript without triggering the agent.
 //
 // The schedule is also exposed over RPC (see rpc.js) so the TUI plugin in
-// tui.tsx can render a live countdown in the prompt footer.
+// tui.tsx can render a live countdown in the prompt footer and a status block
+// in the right sidebar.
+//
+// Timers live in a process-global store rather than in this module's closure.
+// OpenCode reloads plugins whenever a watched file changes, and each reload
+// disposes the previous instance. Keeping the schedule outside the instance
+// means a reload re-arms the existing timers instead of silently dropping
+// them, which is what made an active /ping look idle after an edit.
 
 import { Plugin } from "@opencode/plugin";
 import { IntervalPing } from "./rpc.js";
 
 const DEFAULT_MESSAGE = "ping";
 const DEFAULT_MINUTES = 5;
+const STORE_KEY = Symbol.for("opencode.interval-ping.store");
 
 function isPositiveNumber(value) {
   return typeof value === "number" && Number.isFinite(value) && value > 0;
+}
+
+// One store per process, shared by every plugin instance and reload.
+function store() {
+  if (!globalThis[STORE_KEY]) {
+    globalThis[STORE_KEY] = {
+      // sessionID -> { minutes, nextAt, handle }
+      timers: new Map(),
+      // newest plugin context, swapped on every reload
+      ctx: null,
+      message: DEFAULT_MESSAGE,
+      emit: null,
+    };
+  }
+  return globalThis[STORE_KEY];
 }
 
 export default Plugin.define({
   id: "interval-ping",
   async setup(ctx) {
     const options = ctx.options || {};
-    const message =
+    const state = store();
+    state.ctx = ctx;
+    state.message =
       typeof options.message === "string" ? options.message : DEFAULT_MESSAGE;
     const defaultMinutes = isPositiveNumber(options.intervalMinutes)
       ? options.intervalMinutes
       : DEFAULT_MINUTES;
 
-    // sessionID -> { handle, minutes, nextAt }
-    const timers = new Map();
-
-    // Registered below; used to emit schedule-change events.
-    let registration;
-
     function notify(sessionID, text) {
-      return ctx.session
+      const current = state.ctx;
+      if (!current) {
+        return;
+      }
+      current.session
         .synthetic({ sessionID: sessionID, text: text })
         .catch(function () {});
     }
 
     function emitChanged(sessionID) {
-      if (!registration) {
+      if (typeof state.emit !== "function") {
         return;
       }
-      registration.events
-        .emit("changed", { sessionID: sessionID })
-        .catch(function () {});
+      state.emit(sessionID);
+    }
+
+    // A single tick: deliver, advance the schedule, then re-arm. Using
+    // setTimeout (not setInterval) keeps the remaining time accurate across
+    // reloads, because the next delay is always derived from nextAt.
+    function arm(sessionID) {
+      const entry = state.timers.get(sessionID);
+      if (!entry) {
+        return;
+      }
+      if (entry.handle) {
+        clearTimeout(entry.handle);
+      }
+      const delay = Math.max(0, entry.nextAt - Date.now());
+      entry.handle = setTimeout(function () {
+        const live = state.timers.get(sessionID);
+        if (!live) {
+          return;
+        }
+        live.nextAt = Date.now() + live.minutes * 60000;
+        notify(sessionID, state.message);
+        emitChanged(sessionID);
+        arm(sessionID);
+      }, delay);
+      if (typeof entry.handle.unref === "function") {
+        entry.handle.unref();
+      }
     }
 
     function stop(sessionID) {
-      const entry = timers.get(sessionID);
+      const entry = state.timers.get(sessionID);
       if (!entry) {
         return false;
       }
-      clearInterval(entry.handle);
-      timers.delete(sessionID);
+      if (entry.handle) {
+        clearTimeout(entry.handle);
+      }
+      state.timers.delete(sessionID);
       emitChanged(sessionID);
       return true;
     }
 
     function start(sessionID, minutes) {
       stop(sessionID);
-      const periodMs = minutes * 60000;
-      const entry = {
-        handle: null,
+      state.timers.set(sessionID, {
         minutes: minutes,
-        nextAt: Date.now() + periodMs,
-      };
-      entry.handle = setInterval(function () {
-        entry.nextAt = Date.now() + periodMs;
-        void notify(sessionID, message);
-        emitChanged(sessionID);
-      }, periodMs);
-      if (typeof entry.handle.unref === "function") {
-        entry.handle.unref();
-      }
-      timers.set(sessionID, entry);
+        nextAt: Date.now() + minutes * 60000,
+        handle: null,
+      });
+      arm(sessionID);
       emitChanged(sessionID);
     }
 
-    registration = await ctx.rpc.register(IntervalPing, {
+    const registration = await ctx.rpc.register(IntervalPing, {
       status: async function (input) {
-        const sessionID = input.sessionID;
-        const entry = timers.get(sessionID);
+        const entry = state.timers.get(input.sessionID);
         if (!entry) {
           return { active: false, nextAt: 0, minutes: 0 };
         }
@@ -102,6 +142,18 @@ export default Plugin.define({
           minutes: entry.minutes,
         };
       },
+    });
+
+    state.emit = function (sessionID) {
+      registration.events
+        .emit("changed", { sessionID: sessionID })
+        .catch(function () {});
+    };
+
+    // Re-arm anything inherited from the previous instance. The delay is
+    // recomputed from nextAt, so a reload never restarts or skips a beat.
+    state.timers.forEach(function (_entry, sessionID) {
+      arm(sessionID);
     });
 
     await ctx.command.transform(function (editor) {
@@ -149,14 +201,11 @@ export default Plugin.define({
       });
     });
 
+    // Deliberately do not clear timers here: this runs on every hot reload,
+    // and the whole point of the shared store is to survive that. `stop` and
+    // `/ping stop` are the only things that end a schedule.
     return function cleanup() {
-      timers.forEach(function (entry) {
-        clearInterval(entry.handle);
-      });
-      timers.clear();
-      if (registration) {
-        void registration.dispose();
-      }
+      void registration.dispose();
     };
   },
 });

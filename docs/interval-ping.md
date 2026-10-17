@@ -31,6 +31,12 @@ without triggering a new agent turn.
 Timers are per-session, so two sessions can run different intervals at once.
 The footer countdown only shows while a timer is active.
 
+Schedules survive plugin hot reloads. Timers live in a process-global store
+(`Symbol.for("opencode.interval-ping.store")`) instead of the plugin instance's
+closure, and each reload re-arms them from the stored `nextAt`. Without this, a
+single file edit disposed the instance and silently killed every running
+`/ping`, which made an active timer look idle in the sidebar.
+
 The sidebar block is always visible: `Ping` with `next M:SS` and
 `every N min · /ping stop` while running, or `idle` with a `/ping 5 to start`
 hint when stopped.
