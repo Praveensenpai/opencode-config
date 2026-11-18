@@ -17,7 +17,7 @@ pub fn run() -> Result<()> {
 
     log::ok("Done. Restart OpenCode to load the new configuration.");
     if secrets.api_key == "CHANGE_ME" {
-        log::warn("Mochi API key left as placeholder");
+        log::warn("OpenRouter API key left as placeholder — set it in opencode.json");
     }
     Ok(())
 }
@@ -44,6 +44,7 @@ fn destination_path(paths: &Paths, destination: Destination) -> PathBuf {
         Destination::Plugin => paths.config_dir.join("plugins").join("karakuri"),
         Destination::IntervalPing => paths.config_dir.join("interval-ping"),
         Destination::BackgroundTasks => paths.config_dir.join("background-tasks"),
+        Destination::QuotaFallback => paths.config_dir.join("quota-fallback"),
         Destination::Bin => paths.bin_dir.clone(),
     }
 }

@@ -2,8 +2,7 @@
   "$schema": "https://opencode.ai/config.json",
   "theme": "system",
   "autoupdate": false,
-  "disabled_providers": ["opencode"],
-  "model": "mochi/v4.1flash",
+  "model": "or/particle-1-free",
   "plugin": ["./plugins/karakuri/plugin.js"],
   "plugins": [
     {
@@ -13,68 +12,146 @@
     {
       "package": "./background-tasks",
       "options": { "width": 40 }
+    },
+    {
+      "package": "./quota-fallback",
+      "options": {
+        "providers": ["or"],
+        "fallbackModels": [
+          "or/particle-1-free",
+          "or/nemotron-3.5-lightning-free",
+          "or/nemotron-3.5-super-vl-free",
+          "or/ling-3.2-flash-free",
+          "or/inkling-2-small-free",
+          "or/nemotron-3-ultra-free",
+          "or/ernie-5.5-flash-preview-free",
+          "or/nemotron-3-nano-omni-free",
+          "or/gemma-4-31b-free",
+          "or/gemma-4-26b-a4b-free",
+          "or/north-mini-code-free",
+          "or/flint-free",
+          "or/dots3-note-preview-free",
+          "or/lfm3-1.7b-free"
+        ],
+        "strategy": "round-robin",
+        "includeRateLimit": false,
+        "rateLimitAttempts": 3,
+        "blacklistMinutes": 30,
+        "maxWaitMs": 900000,
+        "delayMs": 500
+      }
     }
   ],
   "compaction": {
     "auto": true,
     "reserved": 64000
   },
-  "provider": {
-    "mochi": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Mochi (deeperseeker-rs)",
-      "options": {
-        "baseURL": "__MOCHI_BASE_URL__",
-        "apiKey": "__MOCHI_API_KEY__"
+  "providers": {
+    "or": {
+      "name": "OpenRouter (free)",
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "https://openrouter.ai/api/v1",
+        "apiKey": "__OPENROUTER_API_KEY__"
       },
       "models": {
-        "v4.1flash": {
-          "name": "DeepSeek V4.1 Flash",
-          "attachment": true,
-          "limit": { "context": 128000, "output": 8192 },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          }
+        "particle-1-free": {
+          "modelID": "particle-ai/particle-1:free",
+          "name": "Particle-1 (free)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 1048576, "output": 131072 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
         },
-        "v4.1flash-think": {
-          "name": "DeepSeek V4.1 Flash (Deep Think)",
-          "attachment": true,
-          "reasoning": true,
-          "limit": { "context": 128000, "output": 8192 },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          }
+        "nemotron-3.5-lightning-free": {
+          "modelID": "nvidia/nemotron-3.5-lightning:free",
+          "name": "Nemotron 3.5 Lightning (free)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 1000000, "output": 262144 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
         },
-        "v4.1flash-search": {
-          "name": "DeepSeek V4.1 Flash (Web Search)",
-          "attachment": true,
-          "limit": { "context": 128000, "output": 8192 },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          }
+        "nemotron-3.5-super-vl-free": {
+          "modelID": "nvidia/nemotron-3.5-super-vl:free",
+          "name": "Nemotron 3.5 Super VL (free)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 1000000, "output": 8192 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
         },
-        "v4.1flash-think-search": {
-          "name": "DeepSeek V4.1 Flash (Think + Search)",
-          "attachment": true,
-          "reasoning": true,
-          "limit": { "context": 128000, "output": 8192 },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          }
+        "ling-3.2-flash-free": {
+          "modelID": "inclusionai/ling-3.2-flash:free",
+          "name": "Ling 3.2 Flash (free)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 1048576, "output": 262144 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
         },
-        "anthropic/claude-v4.1flash": {
-          "name": "Claude V4.1 Flash",
-          "attachment": true,
-          "reasoning": true,
-          "limit": { "context": 128000, "output": 8192 },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          }
+        "inkling-2-small-free": {
+          "modelID": "thinkingmachines/inkling-2-small:free",
+          "name": "Inkling 2 Small (free)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 1048576, "output": 131072 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
+        },
+        "nemotron-3-ultra-free": {
+          "modelID": "nvidia/nemotron-3-ultra-550b-a55b:free",
+          "name": "Nemotron 3 Ultra (free)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 1000000, "output": 32000 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
+        },
+        "ernie-5.5-flash-preview-free": {
+          "modelID": "baidu/ernie-5.5-flash-preview:free",
+          "name": "ERNIE-5.5-Flash-Preview (free)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 1020000, "output": 32000 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
+        },
+        "nemotron-3-nano-omni-free": {
+          "modelID": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+          "name": "Nemotron 3 Nano Omni (free)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 256000, "output": 65536 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
+        },
+        "gemma-4-31b-free": {
+          "modelID": "google/gemma-4-31b-it:free",
+          "name": "Gemma 4 31B (free)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 262144, "output": 32768 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
+        },
+        "gemma-4-26b-a4b-free": {
+          "modelID": "google/gemma-4-26b-a4b-it:free",
+          "name": "Gemma 4 26B A4B (free)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 262144, "output": 32768 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
+        },
+        "north-mini-code-free": {
+          "modelID": "cohere/north-mini-code:free",
+          "name": "North Mini Code (free)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 256000, "output": 64000 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
+        },
+        "flint-free": {
+          "modelID": "recursive/flint-v1.0:free",
+          "name": "Flint (free)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 262144, "output": 262144 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
+        },
+        "dots3-note-preview-free": {
+          "modelID": "dots-studio/dots-3-note-preview:free",
+          "name": "Dots3-Note Preview (free)",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 512000, "output": 32000 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
+        },
+        "lfm3-1.7b-free": {
+          "modelID": "liquid/lfm-3-1.7b:free",
+          "name": "LFM3-1.7B (free)",
+          "capabilities": { "tools": false, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 262144, "output": 32768 },
+          "cost": [ { "input": 0, "output": 0, "cache": { "read": 0, "write": 0 } } ]
         }
       }
     }

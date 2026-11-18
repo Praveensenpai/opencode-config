@@ -8,7 +8,6 @@ pub struct Paths {
 
 #[derive(Debug, Clone)]
 pub struct Secrets {
-    pub base_url: String,
     pub api_key: String,
 }
 
@@ -18,6 +17,7 @@ pub enum Destination {
     Plugin,
     IntervalPing,
     BackgroundTasks,
+    QuotaFallback,
     Bin,
 }
 

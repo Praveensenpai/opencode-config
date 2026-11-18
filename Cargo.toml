@@ -1,8 +1,8 @@
 [package]
 name = "opencode-config"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
-description = "Single-binary installer for a customized OpenCode setup"
+description = "Single-binary installer for an OpenRouter-based OpenCode setup with quota fallback"
 license = "MIT"
 repository = "https://github.com/Praveensenpai/opencode-config"
 publish = false

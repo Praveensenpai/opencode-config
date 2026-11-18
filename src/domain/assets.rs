@@ -15,6 +15,10 @@ const BACKGROUND_TASKS_INDEX: &str = include_str!("../../plugins/background-task
 const BACKGROUND_TASKS_TUI: &str = include_str!("../../plugins/background-tasks/tui.tsx");
 const BACKGROUND_TASKS_PACKAGE_JSON: &str =
     include_str!("../../plugins/background-tasks/package.json");
+const QUOTA_FALLBACK_INDEX: &str = include_str!("../../plugins/quota-fallback/index.js");
+const QUOTA_FALLBACK_LIB: &str = include_str!("../../plugins/quota-fallback/lib.js");
+const QUOTA_FALLBACK_TEST: &str = include_str!("../../plugins/quota-fallback/test.js");
+const QUOTA_FALLBACK_PACKAGE_JSON: &str = include_str!("../../plugins/quota-fallback/package.json");
 const WRAPPER: &str = include_str!("../../bin/opencode2");
 
 pub const ASSETS: &[Asset] = &[
@@ -89,6 +93,30 @@ pub const ASSETS: &[Asset] = &[
         contents: BACKGROUND_TASKS_PACKAGE_JSON,
         mode: 0o644,
         destination: Destination::BackgroundTasks,
+    },
+    Asset {
+        name: "index.js",
+        contents: QUOTA_FALLBACK_INDEX,
+        mode: 0o644,
+        destination: Destination::QuotaFallback,
+    },
+    Asset {
+        name: "lib.js",
+        contents: QUOTA_FALLBACK_LIB,
+        mode: 0o644,
+        destination: Destination::QuotaFallback,
+    },
+    Asset {
+        name: "test.js",
+        contents: QUOTA_FALLBACK_TEST,
+        mode: 0o644,
+        destination: Destination::QuotaFallback,
+    },
+    Asset {
+        name: "package.json",
+        contents: QUOTA_FALLBACK_PACKAGE_JSON,
+        mode: 0o644,
+        destination: Destination::QuotaFallback,
     },
     Asset {
         name: "opencode2",

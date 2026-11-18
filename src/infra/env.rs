@@ -4,7 +4,7 @@ use std::env;
 use std::io::{self, IsTerminal, Write};
 use std::path::PathBuf;
 
-const DEFAULT_BASE_URL: &str = "http://mochi:4000/v1";
+const PLACEHOLDER_API_KEY: &str = "CHANGE_ME";
 
 pub fn paths() -> Paths {
     let config_root = env::var_os("XDG_CONFIG_HOME")
@@ -26,19 +26,18 @@ fn home() -> PathBuf {
 }
 
 pub fn secrets() -> Result<Secrets> {
-    let base_url = env::var("MOCHI_BASE_URL").unwrap_or_else(|_| DEFAULT_BASE_URL.to_string());
-    let api_key = match env::var("MOCHI_API_KEY") {
+    let api_key = match env::var("OPENROUTER_API_KEY") {
         Ok(value) if !value.is_empty() => value,
         _ => prompt_api_key()?,
     };
-    Ok(Secrets { base_url, api_key })
+    Ok(Secrets { api_key })
 }
 
 fn prompt_api_key() -> Result<String> {
     if !io::stdin().is_terminal() {
-        return Ok("CHANGE_ME".to_string());
+        return Ok(PLACEHOLDER_API_KEY.to_string());
     }
-    eprint!("\u{1f338} Mochi API key (blank = leave placeholder): ");
+    eprint!("\u{1f338} OpenRouter API key (blank = leave placeholder): ");
     io::stderr()
         .flush()
         .map_err(|e| crate::error::Error::io("flush prompt", e))?;
@@ -48,7 +47,7 @@ fn prompt_api_key() -> Result<String> {
         .map_err(|e| crate::error::Error::io("read api key", e))?;
     let trimmed = buffer.trim();
     Ok(if trimmed.is_empty() {
-        "CHANGE_ME".to_string()
+        PLACEHOLDER_API_KEY.to_string()
     } else {
         trimmed.to_string()
     })

@@ -14,8 +14,7 @@ OPTIONS:
     -V, --version    Print the version
 
 ENVIRONMENT:
-    MOCHI_BASE_URL          Provider base URL (default http://mochi:4000/v1)
-    MOCHI_API_KEY           Provider API key (prompts if unset)
+    OPENROUTER_API_KEY      Provider API key (prompts when unset)
     SKIP_KARAKURI=1         Skip the karakuri rules/skills bootstrap
 ";
 

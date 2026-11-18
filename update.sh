@@ -19,8 +19,7 @@ load_env() {
         # shellcheck disable=SC1091
         set -a; source "${SCRIPT_DIR}/.env"; set +a
     fi
-    : "${MOCHI_BASE_URL:=http://mochi:4000/v1}"
-    : "${MOCHI_API_KEY:=}"
+    : "${OPENROUTER_API_KEY:=}"
 }
 
 capture_config() {
@@ -29,11 +28,15 @@ capture_config() {
         log_info "No live opencode.json; skipping"
         return
     fi
-    local sed_args=(-e "s|${MOCHI_BASE_URL}|__MOCHI_BASE_URL__|g")
-    if [[ -n "${MOCHI_API_KEY}" ]]; then
-        sed_args+=(-e "s|${MOCHI_API_KEY}|__MOCHI_API_KEY__|g")
+    local sed_args=()
+    if [[ -n "${OPENROUTER_API_KEY}" ]]; then
+        sed_args+=(-e "s|${OPENROUTER_API_KEY}|__OPENROUTER_API_KEY__|g")
     fi
-    sed "${sed_args[@]}" "${src}" > "${SCRIPT_DIR}/config/opencode.json.tmpl"
+    if (( ${#sed_args[@]} > 0 )); then
+        sed "${sed_args[@]}" "${src}" > "${SCRIPT_DIR}/config/opencode.json.tmpl"
+    else
+        cp "${src}" "${SCRIPT_DIR}/config/opencode.json.tmpl"
+    fi
     log_ok "Captured opencode.json → config/opencode.json.tmpl"
 }
 
@@ -83,9 +86,26 @@ capture_background_tasks() {
     done
 }
 
+capture_quota_fallback() {
+    local src="${CONFIG_DIR}/quota-fallback"
+    if [[ ! -d "${src}" ]]; then
+        log_info "No live quota-fallback plugin; skipping"
+        return
+    fi
+    mkdir -p "${SCRIPT_DIR}/plugins/quota-fallback"
+    local f
+    for f in index.js lib.js test.js package.json; do
+        if [[ -f "${src}/${f}" ]]; then
+            install -m 644 "${src}/${f}" "${SCRIPT_DIR}/plugins/quota-fallback/${f}"
+            log_ok "Captured quota-fallback/${f}"
+        fi
+    done
+}
+
 load_env
 capture_static
 capture_interval_ping
 capture_background_tasks
+capture_quota_fallback
 capture_config
 log_ok "Review changes: git -C \"${SCRIPT_DIR}\" diff"

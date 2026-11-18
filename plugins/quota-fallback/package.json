@@ -1,0 +1,16 @@
+{
+  "name": "opencode-quota-fallback",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Switch a session to the next free model in a circular rotation when the active provider reports quota exhaustion.",
+  "exports": {
+    ".": "./index.js"
+  },
+  "scripts": {
+    "test": "node --test test.js"
+  },
+  "dependencies": {
+    "@opencode/plugin": "latest"
+  }
+}

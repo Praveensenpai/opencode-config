@@ -2,7 +2,7 @@
 
 # 🌸 設定 — OpenCode Config
 
-**A single Rust binary that rebuilds my entire OpenCode setup on any machine — provider, models, TUI ergonomics, and automatic karakuri enforcement.**
+**A single Rust binary that rebuilds my entire OpenCode setup on any machine — OpenRouter free models, automatic quota fallback, TUI ergonomics, and karakuri enforcement.**
 
 [![Public](https://img.shields.io/badge/repo-public-3FB950?style=flat-square&logo=github)](https://github.com/Praveensenpai/opencode-config)
 [![Release](https://img.shields.io/github/v/release/Praveensenpai/opencode-config?style=flat-square&color=7C3AED)](https://github.com/Praveensenpai/opencode-config/releases)
@@ -16,11 +16,11 @@
 
 ## 🎯 Why this exists
 
-My OpenCode setup is not stock. It runs a local OpenAI-compatible proxy, ships five model variants, hides the default provider, tunes compaction, and layers in a rules-and-skills system. None of that is reproducible from memory, and the one file holding a secret must never be committed.
+My OpenCode setup is not stock. It runs on OpenRouter's free tier, rotates to a fresh model the moment one hits its quota, tunes compaction, and layers in a rules-and-skills system. None of that is reproducible from memory, and the one file holding a secret must never be committed.
 
-This repo is the source of truth. One command on a new machine brings the whole environment back — secrets rendered from environment variables or an interactive prompt, never from git.
+This repo is the source of truth. One command on a new machine brings the whole environment back — the API key comes from an interactive prompt or an environment variable, never from git. Non-interactive installs write a `CHANGE_ME` placeholder and warn.
 
-> **Threat model:** the committed config is secret-free by construction. Real values are injected at install time, and the rendered `opencode.json` is written with `0600`.
+> **Threat model:** the committed config is secret-free by construction. The key is injected at install time, and the rendered `opencode.json` is written with `0600`.
 
 ---
 
@@ -61,7 +61,8 @@ curl -fsSL https://raw.githubusercontent.com/Praveensenpai/opencode-config/main/
         │   │ • cli.json · tui.json · package.json │   │
         │   │ • karakuri/plugin.js                 │   │
         │   │ • interval-ping/ (index·rpc·tui)     │   │
-│   │ • background-tasks/ (index·tui)      │   │
+        │   │ • background-tasks/ (index·tui)      │   │
+        │   │ • quota-fallback/ (index·lib·test)   │   │
         │   │ • bin/opencode2 wrapper              │   │
         │   └──────────────────────────────────────┘   │
         └───────────────────────┬──────────────────────┘
@@ -73,7 +74,8 @@ curl -fsSL https://raw.githubusercontent.com/Praveensenpai/opencode-config/main/
         │ ~/.config/opencode/package.json              │
         │ ~/.config/opencode/plugins/karakuri/         │
         │ ~/.config/opencode/interval-ping/            │
-│ ~/.config/opencode/background-tasks/         │
+        │ ~/.config/opencode/background-tasks/         │
+        │ ~/.config/opencode/quota-fallback/           │
         │ ~/.opencode/bin/opencode2              (755) │
         │ karakuri → rules + skills bootstrap + sync   │
         └──────────────────────────────────────────────┘
@@ -97,8 +99,9 @@ cargo test --all-targets
 
 ## ✨ Feature matrix
 
-- 🔌 **Mochi provider** — routes OpenCode through a local `deeperseeker-rs` proxy over the OpenAI-compatible API. [docs](docs/provider-mochi.md)
-- 🧠 **Five model variants** — Flash, Deep Think, Web Search, Think+Search, and a Claude-compatible endpoint, all first-class picker entries. [docs](docs/models.md)
+- 🌐 **OpenRouter free provider** — fourteen zero-cost models, no local proxy to run. [docs](docs/provider-openrouter.md)
+- 🧠 **Fourteen free models** — 1M-context picks like Particle-1, Nemotron 3.5 Lightning, and Ling 3.2 Flash, all first-class picker entries. [docs](docs/models.md)
+- 🔄 **Quota fallback** — rotates to the next free model the moment one hits its quota, with blacklisting and circular round-robin. [docs](docs/quota-fallback.md)
 - 🧮 **Tuned compaction** — reserves 64k of a 128k window so deep-think traces never truncate mid-task. [docs](docs/compaction.md)
 - 🖥️ **CLI & TUI ergonomics** — auto-accept permissions, rendered markdown, hidden thinking, word-wrapped diffs, global tabs. [docs](docs/cli-tui-settings.md)
 - ⚙️ **Automatic karakuri** — a native plugin runs `karakuri digest` + `audit` after every file mutation, debounced and non-blocking. [docs](docs/karakuri-auto.md)
@@ -124,6 +127,7 @@ cargo test --all-targets
 | `plugins/karakuri/` | Auto-digest/audit OpenCode plugin (embedded). |
 | `plugins/interval-ping/` | `/ping` heartbeat plugin with TUI countdown and sidebar status (embedded). |
 | `plugins/background-tasks/` | Right-sidebar panel for running shells, subagents, and PTYs (embedded). |
+| `plugins/quota-fallback/` | Auto-switch to the next free model on quota exhaustion (embedded). |
 | `docs/` | Rationale for each customization. |
 | `.github/workflows/release.yml` | Builds + publishes the Linux x86_64 tarball on `v*` tags. |
 
@@ -155,8 +159,7 @@ git tag v0.1.0 && git push origin v0.1.0
 
 | Env | Effect |
 |---|---|
-| `MOCHI_BASE_URL` | Provider base URL (default `http://mochi:4000/v1`). |
-| `MOCHI_API_KEY` | Provider API key; prompts when unset and TTY-attached. |
+| `OPENROUTER_API_KEY` | Provider API key; prompts when unset and TTY-attached. |
 | `SKIP_KARAKURI=1` | Skip the karakuri rules/skills bootstrap. |
 | `KARAKURI_AUTO=0` | Disable the auto-digest/audit plugin at runtime. |
 | `KARAKURI_DEBOUNCE_MS=8000` | Widen the plugin debounce window. |
