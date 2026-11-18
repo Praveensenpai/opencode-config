@@ -268,6 +268,14 @@ test("detects quota failures by type and by wording", () => {
       },
     }),
   );
+  assert.ok(
+    isQuotaError({
+      error: {
+        type: "provider.rate-limit",
+        message: "Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day",
+      },
+    }),
+  );
   assert.ok(!isQuotaError({ error: { type: "provider.transport", message: "reset" } }));
 });
 

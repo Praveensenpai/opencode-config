@@ -101,7 +101,7 @@ cargo test --all-targets
 
 - 🌐 **OpenRouter free provider** — fourteen zero-cost models, no local proxy to run. [docs](docs/provider-openrouter.md)
 - 🧠 **Fourteen free models** — 1M-context picks like Particle-1, Nemotron 3.5 Lightning, and Ling 3.2 Flash, all first-class picker entries. [docs](docs/models.md)
-- 🔄 **Quota fallback** — rotates to the next free model the moment one hits its quota, with blacklisting and circular round-robin. [docs](docs/quota-fallback.md)
+- 🔄 **Quota fallback** — rotates to the next free model on quota or rate-limit errors, including OpenRouter's account-wide free-daily limit, then falls through to OpenCode Zen models. [docs](docs/quota-fallback.md)
 - 🧮 **Tuned compaction** — reserves 64k of a 128k window so deep-think traces never truncate mid-task. [docs](docs/compaction.md)
 - 🖥️ **CLI & TUI ergonomics** — auto-accept permissions, rendered markdown, hidden thinking, word-wrapped diffs, global tabs. [docs](docs/cli-tui-settings.md)
 - ⚙️ **Automatic karakuri** — a native plugin runs `karakuri digest` + `audit` after every file mutation, debounced and non-blocking. [docs](docs/karakuri-auto.md)

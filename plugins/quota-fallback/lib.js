@@ -33,7 +33,7 @@ export const QUOTA_ERROR_TYPES = new Set([
 // Match quota/billing wording even when a proxy reports it as a generic 429 or
 // 402 instead of the provider.quota error type.
 export const QUOTA_PATTERN =
-  /quota|insufficient[-_\s]?(?:quota|balance|credit|funds)|credit[-_\s]?limit|usage[-_\s]?limit|billing|budget[-_\s]?(?:exceeded|limit)|spend(?:ing)?[-_\s]?limit|limit[-_\s]?(?:reached|exhausted)|out of credits|plan has expired|free usage|payment required/i;
+  /quota|insufficient[-_\s]?(?:quota|balance|credit|funds)|credit[-_\s]?limit|usage[-_\s]?limit|billing|budget[-_\s]?(?:exceeded|limit)|spend(?:ing)?[-_\s]?limit|limit[-_\s]?(?:reached|exhausted|exceeded)|free[-_\s]models[-_\s]?per[-_\s]?day|free[-_\s]daily[-_\s]?limit|out of credits|plan has expired|free usage|payment required/i;
 
 // Local model daemons (deeperseeker-rs / Mochi) drain a pool of upstream tokens
 // and report an empty pool as a provider-internal failure instead of a quota

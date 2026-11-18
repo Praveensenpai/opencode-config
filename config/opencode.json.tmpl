@@ -16,8 +16,19 @@
     {
       "package": "./quota-fallback",
       "options": {
-        "providers": ["or"],
+        "providers": ["opencode", "or"],
         "fallbackModels": [
+          "opencode/glm-5.3-flash-free",
+          "opencode/minimax-m3.1-flash-free",
+          "opencode/longcat-2.5-free",
+          "opencode/mimo-v2.6-flash-free",
+          "opencode/nemotron-3.5-super-vl-free",
+          "opencode/nemotron-3.5-lightning-free",
+          "opencode/inkling-2-small-free",
+          "opencode/flint-40b-free",
+          "opencode/beam-free",
+          "opencode/iceman-free",
+          "opencode/big-pickle",
           "or/particle-1-free",
           "or/nemotron-3.5-lightning-free",
           "or/nemotron-3.5-super-vl-free",
@@ -34,8 +45,8 @@
           "or/lfm3-1.7b-free"
         ],
         "strategy": "round-robin",
-        "includeRateLimit": false,
-        "rateLimitAttempts": 3,
+        "includeRateLimit": true,
+        "rateLimitAttempts": 1,
         "blacklistMinutes": 30,
         "maxWaitMs": 900000,
         "delayMs": 500

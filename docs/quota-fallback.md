@@ -10,7 +10,12 @@ retry is scheduled, so the loop resumes instead of dying.
 ## What it does
 
 - Watches for quota/billing failures (`provider.quota`, `provider.free-limit`,
-  budget limits, 402s, and quota wording in generic 429s).
+  budget limits, 402s, and quota wording in generic 429s, including OpenRouter's
+  `free-models-per-day` / `free daily limit` messages).
+- Switches on plain rate limits too (`includeRateLimit: true`) on the first retry
+  (`rateLimitAttempts: 1`), since an account-wide free-daily limit affects every
+  OpenRouter free model at once. The rotation then lands on an `opencode/` Zen
+  model, which does not consume OpenRouter's daily quota.
 - Treats a local daemon's "no active tokens" error as exhaustion too.
 - Blacklists the exhausted model for `blacklistMinutes` (30) so it is skipped.
 - Advances a circular cursor through `fallbackModels` one slot per switch.
@@ -23,11 +28,11 @@ retry is scheduled, so the loop resumes instead of dying.
 {
   "package": "./quota-fallback",
   "options": {
-    "providers": ["or"],
-    "fallbackModels": ["or/particle-1-free", "..."],
+    "providers": ["opencode", "or"],
+    "fallbackModels": ["opencode/glm-5.3-flash-free", "..."],
     "strategy": "round-robin",
-    "includeRateLimit": false,
-    "rateLimitAttempts": 3,
+    "includeRateLimit": true,
+    "rateLimitAttempts": 1,
     "blacklistMinutes": 30,
     "maxWaitMs": 900000,
     "delayMs": 500
