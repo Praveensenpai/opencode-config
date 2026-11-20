@@ -23,10 +23,15 @@ without triggering a new agent turn.
 ## How to use
 
 ```text
-/ping        start (or restart) at the configured default interval
-/ping 10     start (or restart) at 10 minutes
-/ping stop   stop the timer for this session
+/ping                       start (or restart) at the configured default interval
+/ping 10                    start (or restart) at 10 minutes
+/ping 10 "my message"       start at 10 minutes and post "my message" each tick
+/ping stop                  stop the timer for this session
 ```
+
+When a message is supplied after the interval it is used for that session only
+and overrides the configured `message`. Without it, the configured message (or
+the default `ping`) is posted on each tick.
 
 Timers are per-session, so two sessions can run different intervals at once.
 The footer countdown only shows while a timer is active.

@@ -1,9 +1,10 @@
 // interval-ping: send a fixed message into a session on a repeating interval.
 //
 // Usage (in any session):
-//   /ping        start (or restart) at the default interval
-//   /ping 10     start (or restart) at 10 minutes
-//   /ping stop   stop the timer for this session
+//   /ping                    start (or restart) at the default interval
+//   /ping 10                 start (or restart) at 10 minutes
+//   /ping 10 "my message"    start at 10 minutes and post "my message" each tick
+//   /ping stop               stop the timer for this session
 //
 // Options come from opencode.json(c):
 //   "plugins": [
@@ -39,7 +40,7 @@ function isPositiveNumber(value) {
 function store() {
   if (!globalThis[STORE_KEY]) {
     globalThis[STORE_KEY] = {
-      // sessionID -> { minutes, nextAt, handle }
+      // sessionID -> { minutes, nextAt, handle, message }
       timers: new Map(),
       // newest plugin context, swapped on every reload
       ctx: null,
@@ -97,7 +98,7 @@ export default Plugin.define({
           return;
         }
         live.nextAt = Date.now() + live.minutes * 60000;
-        notify(sessionID, state.message);
+        notify(sessionID, live.message);
         emitChanged(sessionID);
         arm(sessionID);
       }, delay);
@@ -119,12 +120,13 @@ export default Plugin.define({
       return true;
     }
 
-    function start(sessionID, minutes) {
+    function start(sessionID, minutes, message) {
       stop(sessionID);
       state.timers.set(sessionID, {
         minutes: minutes,
         nextAt: Date.now() + minutes * 60000,
         handle: null,
+        message: message ?? state.message,
       });
       arm(sessionID);
       emitChanged(sessionID);
@@ -180,19 +182,35 @@ export default Plugin.define({
           }
 
           let minutes = defaultMinutes;
-          if (arg.length !== 0) {
-            const parsed = Number(arg);
-            if (!isPositiveNumber(parsed)) {
+          let message = state.message;
+          const parts = arg.split(/\s+/);
+          if (parts.length >= 2) {
+            // possible minutes and message, e.g. "/ping 15 dont ask me approved"
+            const parsed = Number(parts[0]);
+            if (isPositiveNumber(parsed)) {
+              minutes = parsed;
+              message = parts.slice(1).join(" ").trim();
+            } else {
               await notify(
                 sessionID,
                 "invalid interval, use minutes e.g. /ping 10",
               );
               return;
             }
-            minutes = parsed;
+          } else if (parts.length === 1) {
+            const parsed = Number(parts[0]);
+            if (isPositiveNumber(parsed)) {
+              minutes = parsed;
+            } else {
+              await notify(
+                sessionID,
+                "invalid interval, use minutes e.g. /ping 10",
+              );
+              return;
+            }
           }
 
-          start(sessionID, minutes);
+          start(sessionID, minutes, message);
           await notify(
             sessionID,
             "interval-ping started, every " + minutes + " min in this session",
